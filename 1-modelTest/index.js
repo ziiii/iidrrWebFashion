@@ -29,30 +29,41 @@ document.body.appendChild(renderer.domElement);
     let mixer;
     let animations={};
     let clipLoaded=0;
-    let clipNumber=2;
+    let clipNumber=3;
 
     fbxLoader.load('asset/rig_cyborg_t.fbx', function (fbxCharacter) {
         character = fbxCharacter;
         scene.add(character);
     
-    
-            // Set up the AnimationMixer
             mixer = new THREE.AnimationMixer(character);
 
-
+//LOAD WALKING
             fbxLoader.load('asset/Catwalk Walk Forward_inplace.fbx', function (fbxAnimation) {
                 const walkAnimation = fbxAnimation.animations[0];
                 animations.walk = mixer.clipAction(walkAnimation);
+                //animations.walk.setLoop(THREE.LoopRepeat, 2); //TWICE
+
                 clipLoaded++;
                 console.log(clipLoaded);
-                 //TWICE
-                //animations.walk.play();
             
-            });
-        
+            // });
+
+//load turning
+            fbxLoader.load('asset/Catwalk Walk Turn 180 Wide.fbx', function (fbxAnimation) {
+                const turnAnimation = fbxAnimation.animations[0];
+                animations.turn= mixer.clipAction(turnAnimation);
+                clipLoaded++;
+                console.log(clipLoaded);
+            
+            // });
+
+
+        //load stopping
             fbxLoader.load('asset/Catwalk Walk Stop Twist R.fbx', function (fbxAnimation) {
                 const stopAnimation = fbxAnimation.animations[0];
                 animations.stop = mixer.clipAction(stopAnimation);
+             //   animations.stop.setLoop(THREE.LoopRepeat, 1); 
+               //animations.stop.play();
                 clipLoaded++;
                 console.log(clipLoaded);
                 if(clipLoaded==clipNumber){
@@ -60,19 +71,61 @@ document.body.appendChild(renderer.domElement);
                 }
               
             });
-
-            
-            
+        }); 
+    });  
     });
 
-  function playSequence(){
-       animations.walk.setLoop(THREE.LoopRepeat, 2);
-        animations.walk.play();
-        animations.walk.getMixer().addEventListener('finished', function () {
-            animations.stop.play();
-        });
-    }
 
+
+
+  function playSequence(){
+
+        animations.walk.setLoop(THREE.LoopRepeat, 2);
+        animations.walk.play();
+        console.log("walking");
+
+   animations.walk.getMixer().addEventListener('finished',function walkToStop() {
+ 
+    animations.walk.stop();
+    console.log("walking end");
+    animations.walk.reset();
+    animations.stop.setLoop(THREE.LoopRepeat, 1);
+        animations.stop.play();
+        console.log("STOP playing");
+        animations.walk.getMixer().removeEventListener('finished',walkToStop);
+
+    // });
+
+
+    animations.stop.getMixer().addEventListener('finished',function stopToTurn() {
+       
+        animations.stop.stop();
+        animations.stop.reset();
+        console.log("stop end");
+        animations.turn.setLoop(THREE.LoopRepeat, 1);
+        animations.turn.play();
+        console.log("turn playing");
+        // animations.stop.getMixer().removeEventListener('finished');
+        animations.stop.getMixer().removeEventListener('finished',stopToTurn);
+    // });
+
+
+    animations.turn.getMixer().addEventListener('finished', function turnToWalk() {
+        animations.turn.stop();
+        animations.turn.reset();
+        console.log("TURN end");
+        animations.walk.setLoop(THREE.LoopRepeat, 2);
+        animations.walk.play();
+        console.log("walking AGAIN");
+        animations.turn.getMixer().removeEventListener('finished',turnToWalk);
+        playSequence();
+    });
+   
+});
+});
+  }
+    
+    
 //ORBIT controls
 const controls = new OrbitControls( camera, renderer.domElement );
 camera.position.set( 0,0, 1000 );
@@ -100,8 +153,6 @@ let walkspeed = 0;  // Adjust this value to control how fast the character moves
 function animate(){
 requestAnimationFrame(animate);
 controls.update();
-
-
 
 if (mixer) {
      let delta = clock.getDelta();  // Get the time passed since the last frame
