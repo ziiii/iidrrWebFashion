@@ -32,7 +32,7 @@ document.body.appendChild(renderer.domElement);
         scene.add(character);
     
         // Load animation
-        fbxLoader.load('asset/Walking.fbx', function (fbxAnimation) {
+        fbxLoader.load('asset/stopTurnWide7.fbx', function (fbxAnimation) {
             const animations = fbxAnimation.animations;
     
             // Set up the AnimationMixer
