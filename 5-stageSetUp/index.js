@@ -38,43 +38,71 @@ let blueelixir;
 blueelixirLoader.load('asset/blueelixir.fbx', function (fbxCharacter) {
     blueelixir = fbxCharacter;
     scene.add(blueelixir);
-    console.log(blueelixir);
+    //console.log(blueelixir);
 });  
 const goldclawLoader = new FBXLoader();
 let goldclaw;
 goldclawLoader.load('asset/goldclaw.fbx', function (fbxCharacter) {
     goldclaw = fbxCharacter;
     scene.add(goldclaw);
-    console.log(goldclaw);
+    //console.log(goldclaw);
 });  
 const greencatLoader = new FBXLoader();
 let greencat;
 greencatLoader.load('asset/greencat.fbx', function (fbxCharacter) {
     greencat = fbxCharacter;
     scene.add(greencat);
-    console.log(greencat);
+    //console.log(greencat);
 });  
 const neonwugongLoader = new FBXLoader();
 let neonwugong;
 neonwugongLoader.load('asset/neonwugong.fbx', function (fbxCharacter) {
     neonwugong = fbxCharacter;
     scene.add(neonwugong);
-    console.log(neonwugong);
+    //console.log(neonwugong);
 });  
 const pinkframeLoader = new FBXLoader();
 let pinkframe;
 pinkframeLoader.load('asset/blackframe.fbx', function (fbxCharacter) {
     pinkframe = fbxCharacter;
     scene.add(pinkframe);
-    console.log(pinkframe);
+    //console.log(pinkframe);
 });  
 const silvertotemLoader = new FBXLoader();
 let silvertotem;
 silvertotemLoader.load('asset/silvertotem.fbx', function (fbxCharacter) {
     silvertotem = fbxCharacter;
     scene.add(silvertotem);
-    console.log(silvertotem);
+    //console.log(silvertotem);
 });  
+
+
+
+//LOAD 3D TEXT: open call
+const openCallLoader = new FBXLoader();
+let openCall;
+const textLight = new THREE.PointLight(0xffffff, 3, 500); 
+const textLightHelper = new THREE.PointLightHelper(textLight, 10); 
+
+openCallLoader.load('asset/opencall-text.fbx', function (fbxCharacter) {
+    openCall = fbxCharacter;
+    openCall.position.set(camera.position.x,camera.position.y,camera.position.z-300);
+    scene.add(openCall);
+    // const textLight = new THREE.PointLight(0xffffff, 3, 500);  // Color, intensity, and distance
+
+textLight.position.set(openCall.position.x+70, openCall.position.y+20, openCall.position.z+130);  // Set initial position above the character (adjust as needed)
+scene.add(textLight);  // Add the light to the scene
+// const textLightHelper = new THREE.PointLightHelper(textLight, 10);  // Adjust size of the helper
+scene.add(textLightHelper);
+});  
+
+
+// Add a helper to visualize the light (optional)
+// const textLightHelper = new THREE.PointLightHelper(textLight, 10);  // Adjust size of the helper
+// scene.add(textLightHelper);
+
+
+
 
 //set load
     const fbxLoader = new FBXLoader();
@@ -179,7 +207,6 @@ let isWalkingBack=false;
     
     // });
 
-
     animations.walk.getMixer().addEventListener('finished', function endRound() {
         isWalkingBack = false;
         // playSequence();
@@ -213,6 +240,12 @@ scene.add(lightHelper);
 //move forward while walking
 let clock = new THREE.Clock();  // Create a clock to track delta time
 let walkspeed = 2;  // Adjust this value to control how fast the character moves forward
+
+
+
+
+
+
 
 //ANIMATE
 function animate(){
@@ -251,7 +284,17 @@ if (mixer) {
     //     console.log("rootPosition-captured");
     //     console.log(rootPosition);
     // }
-   
+    if (openCall && textLight) {
+
+        const time = clock.getElapsedTime();
+        const amplitude = 200; // Distance the light will move left and right
+        const speed = 2; // Speed of the motion
+        textLight.position.x = openCall.position.x + Math.sin(time * speed) * amplitude;
+
+        // You might also want to update the light helper's position
+        textLightHelper.update();
+    }
+
 renderer.render(scene, camera);
 
 }
