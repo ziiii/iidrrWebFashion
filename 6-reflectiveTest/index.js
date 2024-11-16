@@ -72,15 +72,7 @@ object.position.y-=200;
 const silverclawLoader = new GLTFLoader();
 silverclawLoader.load('asset/silvercalw.glb', function (gltf) {
     gltf.scene.traverse(function (child) {
-        // if (child.isMesh) {
-        //     child.material = new THREE.MeshPhysicalMaterial({
-        //         color: 0xffffff, // Base color
-        //         metalness: 1,    // High metalness for a metallic look
-        //         roughness: 0.05,  // Low roughness for reflectivity
-        //         envMap: envMap,   // Apply the environment map
-        //         envMapIntensity: 1.5, // Adjust intensity if needed
-        //     });
-        // }
+   
             if (child.isMesh) {
                 // Clone the existing material and update only envMap and related properties
                 child.material = child.material.clone();
@@ -116,7 +108,6 @@ function animate(){
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
-   // renderer.outputEncoding = THREE.sRGBEncoding;
     }
     
     animate();
