@@ -31,11 +31,11 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;//enable shadow
 document.body.appendChild(renderer.domElement);
 
 //MARK the center
-const markGeometry = new THREE.BoxGeometry( 10, 10, 10 ); 
-const markMaterial = new THREE.MeshBasicMaterial( {color: 0x00ffaa} ); 
-const centerMark = new THREE.Mesh( markGeometry, markMaterial ); 
-centerMark.position.set(0,0,0);
-scene.add(centerMark);
+// const markGeometry = new THREE.BoxGeometry( 10, 10, 10 ); 
+// const markMaterial = new THREE.MeshBasicMaterial( {color: 0x00ffaa} ); 
+// const centerMark = new THREE.Mesh( markGeometry, markMaterial ); 
+// centerMark.position.set(0,0,0);
+// scene.add(centerMark);
 
 //GROUND
 // const ground = new THREE.Mesh(
@@ -83,16 +83,33 @@ const cube = new THREE.Mesh(geometry, material);
 //scene.add(cube);
 
 
-//Set Reflection EnvMap
+//EnvMap, background same
+// let envMap;
+// const envLoader=new RGBELoader();
+// envLoader.load("asset/cyclorama_hard_light_1k.hdr",function(texture){
+//     texture.mapping = THREE.EquirectangularReflectionMapping;
+// scene.background=texture;
+// envMap=texture;
+// applyMaterial();  
+// });
+
+//HDR FOR EnvMap
 let envMap;
 const envLoader=new RGBELoader();
-envLoader.load("asset/kloofendal_misty_morning_puresky_1k.hdr",function(texture){
+envLoader.load("asset/photo_studio_01_1k.hdr",function(texture){
     texture.mapping = THREE.EquirectangularReflectionMapping;
-scene.background=texture;
+//scene.background=texture;
 envMap=texture;
 applyMaterial();  
 });
 
+const envLoader2=new RGBELoader();
+envLoader2.load("asset/kloofendal_misty_morning_puresky_1k.hdr",function(texture){
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+scene.background=texture;
+//envMap=texture;
+applyMaterial();  
+});
 
 let oc;
 let blueelixir;
@@ -140,10 +157,11 @@ blackclawLoader.load('asset/blender_black_claw.glb', function (gltf) {
         }
 });
 scene.add(gltf.scene);
- gltf.scene.scale.set(100, 100, 100);
-gltf.scene.position.x-=80;
-gltf.scene.position.y-=200;
-// gltf.scene.rotation.y = Math.PI / 80;
+ gltf.scene.scale.set(80, 80, 80);
+gltf.scene.position.x-=90;
+gltf.scene.position.y-=40;
+ gltf.scene.position.z-=600;
+gltf.scene.rotation.y = Math.PI / 4;
 }, function (xhr) {
 console.log((xhr.loaded / xhr.total * 100) + "%");
 }, function (error) {
@@ -348,8 +366,8 @@ blackframeLoader .load('asset/blender_black_totem.glb', function (gltf) {
     });
     scene.add(gltf.scene);
     gltf.scene.scale.set(100, 100, 100);
-     gltf.scene.position.x -= 510;
-    gltf.scene.position.y+=70;
+     gltf.scene.position.x -= 740;
+    gltf.scene.position.y-=270;
     // gltf.scene.position.z += 80;
     // gltf.scene.rotation.y = Math.PI / 2;
 }, function (xhr) {
@@ -407,6 +425,15 @@ floorLoader.load('asset/blender_black_platform.glb', function (gltf) {
     console.error('An error occurred:', error);
 });
 
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// directionalLight.position.set(0, 100, 0); // Position the light above the scene
+// directionalLight.target.position.set(0, -200, 0); // Make it point downwards at the origin
+//scene.add(directionalLight);
+//scene.add(directionalLight.target); // Don't forget to add the target to the scene
+
+// Add a helper to visualize the light's direction
+// const lightHelper = new THREE.DirectionalLightHelper(directionalLight, 1);
+// scene.add(lightHelper);
 
 
 //LOAD 3D TEXT: open call
@@ -442,15 +469,39 @@ opencallLoader .load('asset/silver_opencall.glb', function (gltf) {
 // const textLight = new THREE.PointLight(0xffffff, 3, 500); 
 // const textLightHelper = new THREE.PointLightHelper(textLight, 10); 
 
-// openCallLoader.load('asset/ocsilver.fbx', function (fbxCharacter) {
+// openCallLoader.load('asset/oc.fbx', function (fbxCharacter) {
 //     openCall = fbxCharacter;
 //     openCall.position.set(camera.position.x,camera.position.y,camera.position.z-300);
-//    // scene.add(openCall);
+//     scene.add(openCall);
 //     // const textLight = new THREE.PointLight(0xffffff, 3, 500);  // Color, intensity, and distance
 
 // textLight.position.set(openCall.position.x+70, openCall.position.y+20, openCall.position.z+130);  // Set initial position above the character (adjust as needed)
 // });  
 
+const smallmarkLoader = new GLTFLoader();
+smallmarkLoader.load('asset/blender_black_logo.glb', function (gltf) {
+    gltf.scene.traverse(function (child) {
+   
+            if (child.isMesh) {
+                // Clone the existing material and update only envMap and related properties
+                child.material = child.material.clone();
+                child.material.envMap = envMap;  // Apply the environment map
+                child.material.envMapIntensity = 1.5;  // Adjust intensity if needed
+                child.material.needsUpdate = true; // Ensure the material updates with the new properties
+            }
+    });
+    scene.add(gltf.scene);
+    gltf.scene.scale.set(100, 100, 100);
+    gltf.scene.position.y-=290;
+ gltf.scene.position.x-=160;
+  
+    // gltf.scene.position.set(-90, 10, 0);
+    // gltf.scene.rotation.y = Math.PI / 80;
+}, function (xhr) {
+    console.log((xhr.loaded / xhr.total * 100) + "%");
+}, function (error) {
+    console.error('An error occurred:', error);
+});
 
 
 
